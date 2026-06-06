@@ -50,12 +50,31 @@ pipeline {
             }
         }
         stage('Update k8s Manifest') {
-            steps {
-            sh """
-            sed -i 's|image: dewdropsmk/flask-devops:.*|image: dewdropsmk/flask-devops:${BUILD_NUMBER}|' k8s/deployment.yaml
-            """
-            }
+        steps {
+            withCredentials([usernamePassword(
+                credentialsId: 'Github',
+                usernameVariable: 'GIT_USER',
+                passwordVariable: 'GIT_TOKEN'
+            )]) {
+
+                sh """
+                sed -i 's|image: dewdropsmk/flask-devops:.*|image: dewdropsmk/flask-devops:${BUILD_NUMBER}|' k8s/deployment.yaml
+
+                echo "===== Updated Image ====="
+                grep image k8s/deployment.yaml
+
+                git config user.email "jenkins@example.com"
+                git config user.name "Jenkins"
+
+                git add k8s/deployment.yaml
+
+                git commit -m "Update image to ${BUILD_NUMBER}" || true
+
+                git push https://${GIT_USER}:${GIT_TOKEN}@github.com/DewDrops-MK/flash-DevOps.git HEAD:master
+                """
         }
+    }
+}
         stage('Cleanup') {
             steps {
             sh """
