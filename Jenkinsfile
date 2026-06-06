@@ -1,5 +1,7 @@
 pipeline {
-    agent any
+    agent {
+        label 'build-agent'
+    }
     environment {
         IMAGE_NAME = "dewdropsmk/flask-devops"
     }
@@ -11,36 +13,41 @@ pipeline {
         }
         stage('OWASP Dependency Check') {
             steps {
-                dependencyCheck additionalArguments: '--scan ./'
+                dependencyCheck odcInstallation: 'OWASP', additionalArguments: '--scan ./ --noupdate'
             }
         }
         stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv('sonarqube') {
-                    sh '''
-                    sonar-scanner \
-                    -Dsonar.projectKey=flask-app \
-                    -Dsonar.sources=. \
-                    -Dsonar.host.url=http://192.168.1.110:9000 \
-                    -Dsonar.login=sonarqube
-                    '''
-                }
+
+    steps {
+        withSonarQubeEnv('sonarqube') {
+
+            script {
+                def scannerHome = tool 'sonar-scanner'
+                sh """
+                ${scannerHome}/bin/sonar-scanner \
+                -Dsonar.projectKey=flask-devops \
+                -Dsonar.projectName=flask-devops \
+                -Dsonar.sources=. \
+                -Dsonar.sourceEncoding=UTF-8
+                """
             }
+        }
+    }
         }
         stage('Docker Build') {
             steps {
-                sh 'docker build -t $IMAGE_NAME:$BUILD_NUMBER .'
+                sh "docker build -t ${IMAGE_NAME}:${BUILD_NUMBER} ."
             }
         }
         stage('Trivy Scan') {
             steps {
-                sh 'trivy image $IMAGE_NAME:$BUILD_NUMBER'
+                sh "trivy image ${IMAGE_NAME}:${BUILD_NUMBER}"
             }
         }
         stage('Docker Push') {
             steps {
-                withDockerRegistry([credentialsId: 'dockerhub']) {
-                    sh "docker push $IMAGE_NAME:$BUILD_NUMBER"
+                withDockerRegistry([credentialsId: 'dockerhub', url: '']) {
+                    sh "docker push ${IMAGE_NAME}:${BUILD_NUMBER}"
                 }
             }
         }
