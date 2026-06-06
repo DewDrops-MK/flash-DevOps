@@ -40,7 +40,7 @@ pipeline {
         stage('Docker Push') {
             steps {
                 withDockerRegistry([credentialsId: 'dockerhub']) {
-                    sh 'docker push $IMAGE_NAME:$BUILD_NUMBER'
+                    sh "docker push $IMAGE_NAME:$BUILD_NUMBER"
                 }
             }
         }
