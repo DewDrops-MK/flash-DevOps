@@ -17,10 +17,8 @@ pipeline {
             }
         }
         stage('SonarQube Analysis') {
-
-    steps {
+            steps {
         withSonarQubeEnv('sonarqube') {
-
             script {
                 def scannerHome = tool 'sonar-scanner'
                 sh """
@@ -51,5 +49,19 @@ pipeline {
                 }
             }
         }
+        stage('Update k8s Manifest') {
+            steps {
+            sh """
+            sed -i 's|image: dewdropsmk/flask-devops:.*|image: dewdropsmk/flask-devops:${BUILD_NUMBER}|' k8s/deployment.yaml
+            """
+            }
+        }
+        stage('Cleanup') {
+            steps {
+            sh """
+            docker rmi ${IMAGE_NAME}:${BUILD_NUMBER} || true
+            """
+        }
+
     }
 }
