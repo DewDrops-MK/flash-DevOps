@@ -369,3 +369,26 @@ kubectl delete -f k8s/deployment.yaml
 ## Learning Outcome
 
 This project helped me re-practice and strengthen real-world DevOps concepts including CI/CD automation, Docker image lifecycle, DevSecOps scanning, Kubernetes deployment, and GitOps-based delivery with Argo CD.
+
+
+## 👨‍💻 Author
+
+<div align="center">
+
+**Manjunath K** — DevOps Engineer, Bengaluru 🇮🇳
+
+[![GitHub](https://img.shields.io/badge/GitHub-DewDrops--MK-181717?style=for-the-badge&logo=github)](https://github.com/DewDrops-MK)
+
+*15 years in IT · Hardware validation background · Cloud-native DevOps*
+
+*Building production-grade infrastructure, one commit at a time.*
+
+</div>
+
+---
+
+<div align="center">
+
+⭐ **If this project helped you, give it a star!** ⭐
+
+</div>
