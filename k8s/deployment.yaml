@@ -17,6 +17,6 @@ spec:
     spec:
       containers:
       - name: flask-app
-        image: dewdropsmk/flask-devops:5
+        image: dewdropsmk/flask-devops:8
         ports:
         - containerPort: 5000
